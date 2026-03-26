@@ -1,33 +1,34 @@
 # @baolq/ui Design System Figma Make Guidelines
 
 This project uses (MUST, only uses) the **@baolq/ui** component library (`import { ... } from '@baolq/ui'`).
-All detailed guidelines are in the `guidelines/baole-ui/` folder.
+All detailed guidelines are in the `guidelines/` folder.
 
 ## MANDATORY: Follow this workflow before writing any code
 
 ### Step 1 Read Overview Files (REQUIRED)
 
-Read ALL files with a name that starts with `overview-` in `guidelines/baole-ui/`:
+Read ALL files with a name that starts with `overview-` in `guidelines/`:
 
-- `guidelines/baole-ui/overview-components.md`
-- `guidelines/baole-ui/overview-icons.md`
+- `guidelines/overview-detail-guidelines.md`
+- `guidelines/overview-components.md`
+- `guidelines/overview-icons.md`
 
 ### Step 2 Read Design Tokens (REQUIRED)
 
-Read ALL files in `guidelines/baole-ui/design-tokens/`. Do NOT skip this step:
+Read ALL files in `guidelines/design-tokens/`. Do NOT skip this step:
 
-- `guidelines/baole-ui/design-tokens/colors.md`
-- `guidelines/baole-ui/design-tokens/typography.md`
-- `guidelines/baole-ui/design-tokens/spacing.md`
+- `guidelines/design-tokens/colors.md`
+- `guidelines/design-tokens/typography.md`
+- `guidelines/design-tokens/spacing.md`
 
 ### Step 3 Read Component Guidelines BEFORE Using Any Component (REQUIRED)
 
 Before using ANY component, read its guidelines file first:
 
-- Using Button: Read `guidelines/baole-ui/components/button.md` FIRST
-- Using Input: Read `guidelines/baole-ui/components/input.md` FIRST
-- Using Dialog: Read `guidelines/baole-ui/components/dialog.md` FIRST
-- (And so on for every component all guides are in `guidelines/baole-ui/components/`)
+- Using Button: Read `guidelines/components/button.md` FIRST
+- Using Input: Read `guidelines/components/input.md` FIRST
+- Using Dialog: Read `guidelines/components/dialog.md` FIRST
+- (And so on for every component all guides are in `guidelines/components/`)
 
 ## Key Rules
 
@@ -41,4 +42,4 @@ Before using ANY component, read its guidelines file first:
 
 ## Full Documentation
 
-See `guidelines/baole-ui/Guidelines.md` for the complete component reference and examples.
+See `guidelines/overview-detail-guidelines` for the complete component reference and examples.

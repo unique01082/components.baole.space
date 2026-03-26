@@ -27,11 +27,11 @@ Add the stylesheet import to your app's entry point:
 
 ```tsx
 // src/main.tsx or src/app/App.tsx
-import '@baolq/ui/style.css'
-import { createRoot } from 'react-dom/client'
-import App from './App'
+import "@baolq/ui/style.css";
+import { createRoot } from "react-dom/client";
+import App from "./App";
 
-createRoot(document.getElementById('root')!).render(<App />)
+createRoot(document.getElementById("root")!).render(<App />);
 ```
 
 ### 2. Configure Tailwind (Optional but Recommended)
@@ -40,17 +40,17 @@ If you're using Tailwind CSS in your project, extend your config with the @baolq
 
 ```typescript
 // tailwind.config.ts
-import type { Config } from 'tailwindcss'
-import { baolePreset } from '@baolq/ui/tailwind-preset'
+import type { Config } from "tailwindcss";
+import { baolePreset } from "@baolq/ui/tailwind-preset";
 
 export default {
   presets: [baolePreset],
   content: [
-    './src/**/*.{ts,tsx}',
+    "./src/**/*.{ts,tsx}",
     // Include @baolq/ui components in scan
-    './node_modules/@baolq/ui/dist/**/*.{js,ts,jsx,tsx}',
+    "./node_modules/@baolq/ui/dist/**/*.{js,ts,jsx,tsx}",
   ],
-} satisfies Config
+} satisfies Config;
 ```
 
 ### 3. Set Up Dark Background
@@ -64,7 +64,7 @@ export default function App() {
     <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e]">
       {/* Your app content */}
     </div>
-  )
+  );
 }
 ```
 
@@ -75,8 +75,8 @@ export default function App() {
 ### Button Example
 
 ```tsx
-import { Button } from '@baolq/ui'
-import { Plus } from 'lucide-react'
+import { Button } from "@baolq/ui";
+import { Plus } from "lucide-react";
 
 function Example() {
   return (
@@ -85,19 +85,28 @@ function Example() {
         variant="gradient"
         size="lg"
         leftIcon={<Plus size={16} />}
-        onClick={() => alert('Clicked!')}
+        onClick={() => alert("Clicked!")}
       >
         Create New Project
       </Button>
     </div>
-  )
+  );
 }
 ```
 
 ### Card Example
 
 ```tsx
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, Button, Badge } from '@baolq/ui'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  Button,
+  Badge,
+} from "@baolq/ui";
 
 function Example() {
   return (
@@ -122,20 +131,27 @@ function Example() {
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }
 ```
 
 ### Form Example
 
 ```tsx
-import { Input, Button, Card, CardHeader, CardTitle, CardContent } from '@baolq/ui'
-import { Mail, Lock } from 'lucide-react'
-import { useState } from 'react'
+import {
+  Input,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@baolq/ui";
+import { Mail, Lock } from "lucide-react";
+import { useState } from "react";
 
 function LoginForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   return (
     <Card variant="glass" className="max-w-md mx-auto">
@@ -164,7 +180,7 @@ function LoginForm() {
         </Button>
       </CardContent>
     </Card>
-  )
+  );
 }
 ```
 
@@ -175,9 +191,9 @@ function LoginForm() {
 ### Individual Imports
 
 ```tsx
-import { Button } from '@baolq/ui'
-import { Card, CardHeader, CardTitle } from '@baolq/ui'
-import { Badge } from '@baolq/ui'
+import { Button } from "@baolq/ui";
+import { Card, CardHeader, CardTitle } from "@baolq/ui";
+import { Badge } from "@baolq/ui";
 ```
 
 ### Batch Imports
@@ -192,7 +208,7 @@ import {
   Badge,
   Input,
   Separator,
-} from '@baolq/ui'
+} from "@baolq/ui";
 ```
 
 ### Icon Imports (from lucide-react)
@@ -206,7 +222,7 @@ import {
   ArrowRight,
   Download,
   Trash2,
-} from 'lucide-react'
+} from "lucide-react";
 ```
 
 ---
@@ -216,8 +232,8 @@ import {
 ### Dashboard Layout
 
 ```tsx
-import { Card, CardHeader, CardTitle, CardContent, Badge } from '@baolq/ui'
-import { TrendingUp, Users, DollarSign } from 'lucide-react'
+import { Card, CardHeader, CardTitle, CardContent, Badge } from "@baolq/ui";
+import { TrendingUp, Users, DollarSign } from "lucide-react";
 
 function Dashboard() {
   return (
@@ -226,7 +242,7 @@ function Dashboard() {
         <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
           Dashboard
         </h1>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card variant="glass">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -259,68 +275,64 @@ function Dashboard() {
 
           <Card variant="gradient" hoverable>
             <CardHeader>
-              <Badge variant="gradient" className="mb-2">Featured</Badge>
+              <Badge variant="gradient" className="mb-2">
+                Featured
+              </Badge>
               <CardTitle>Upgrade to Pro</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-white/70">
-                Unlock premium features
-              </p>
+              <p className="text-sm text-white/70">Unlock premium features</p>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }
 ```
 
 ### Status Badges
 
 ```tsx
-import { Badge } from '@baolq/ui'
+import { Badge } from "@baolq/ui";
 
 function OrderStatus({ status }: { status: string }) {
   const statusMap = {
-    completed: { variant: 'success', label: 'Completed' },
-    pending: { variant: 'warning', label: 'Pending' },
-    failed: { variant: 'destructive', label: 'Failed' },
-    processing: { variant: 'info', label: 'Processing' },
-  }
+    completed: { variant: "success", label: "Completed" },
+    pending: { variant: "warning", label: "Pending" },
+    failed: { variant: "destructive", label: "Failed" },
+    processing: { variant: "info", label: "Processing" },
+  };
 
-  const config = statusMap[status] || statusMap.pending
+  const config = statusMap[status] || statusMap.pending;
 
   return (
     <Badge variant={config.variant} dot>
       {config.label}
     </Badge>
-  )
+  );
 }
 ```
 
 ### Loading States
 
 ```tsx
-import { Button, Skeleton, Card, CardHeader, CardContent } from '@baolq/ui'
-import { useState } from 'react'
+import { Button, Skeleton, Card, CardHeader, CardContent } from "@baolq/ui";
+import { useState } from "react";
 
 function DataFetcher() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const handleFetch = async () => {
-    setLoading(true)
-    await fetchData()
-    setLoading(false)
-  }
+    setLoading(true);
+    await fetchData();
+    setLoading(false);
+  };
 
   return (
     <Card variant="glass">
       <CardHeader>
-        <Button
-          variant="gradient"
-          loading={loading}
-          onClick={handleFetch}
-        >
+        <Button variant="gradient" loading={loading} onClick={handleFetch}>
           Load Data
         </Button>
       </CardHeader>
@@ -338,7 +350,7 @@ function DataFetcher() {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 ```
 
@@ -389,16 +401,16 @@ All components accept `className` for additional styling:
 All components are fully typed:
 
 ```tsx
-import type { ButtonProps, CardProps, InputProps } from '@baolq/ui'
+import type { ButtonProps, CardProps, InputProps } from "@baolq/ui";
 
 // Component with typed props
 const CustomButton: React.FC<ButtonProps> = (props) => {
-  return <Button {...props} />
-}
+  return <Button {...props} />;
+};
 
 // Type-safe variant usage
-const variant: ButtonProps['variant'] = 'gradient' // ✅ Type-safe
-const invalidVariant: ButtonProps['variant'] = 'invalid' // ❌ Type error
+const variant: ButtonProps["variant"] = "gradient"; // ✅ Type-safe
+const invalidVariant: ButtonProps["variant"] = "invalid"; // ❌ Type error
 ```
 
 ---
@@ -426,11 +438,7 @@ All @baolq/ui components follow accessibility best practices:
 
 ```tsx
 // Inputs with labels are automatically linked
-<Input
-  label="Email Address"
-  type="email"
-  placeholder="you@example.com"
-/>
+<Input label="Email Address" type="email" placeholder="you@example.com" />
 ```
 
 ---
@@ -464,12 +472,12 @@ Visit the running app to explore interactive examples of every component.
 
 ## Need Help?
 
-- **GitHub Issues**: https://github.com/unique01082/baole-ui/issues
-- **Documentation**: `/guidelines/baole-ui/`
+- **GitHub Issues**: https://github.com/unique01082/components.baole.space/issues
+- **Documentation**: `/guidelines/`
 - **Showcase App**: Run `npm run dev`
 
 ---
 
 **Welcome to @baolq/ui!** 🎨✨
 
-*"In code we trust, in games we clutch, in photos we overexpose (+0.3 EV)"*
+_"In code we trust, in games we clutch, in photos we overexpose (+0.3 EV)"_
