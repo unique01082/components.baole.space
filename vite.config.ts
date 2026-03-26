@@ -36,7 +36,7 @@ export default defineConfig({
     ...(isLibBuild
       ? [
         dts({
-          include: ['src/app/components'],
+          include: ['src/components'],
           outDir: 'dist',
           insertTypesEntry: true,
           tsconfigPath: './tsconfig.json',
@@ -53,7 +53,7 @@ export default defineConfig({
   ...(isLibBuild && {
     build: {
       lib: {
-        entry: path.resolve(__dirname, 'src/app/components/index.ts'),
+        entry: path.resolve(__dirname, 'src/components/index.ts'),
         formats: ['es', 'cjs'],
         fileName: (format) => `index.${format === 'es' ? 'js' : 'cjs'}`,
       },
