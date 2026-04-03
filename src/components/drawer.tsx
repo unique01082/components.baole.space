@@ -1,159 +1,161 @@
 import * as React from "react";
+import { Drawer as DrawerPrimitive } from "vaul";
 import { X } from "lucide-react";
 import { cn } from "../utils";
-import { Button } from "./button";
+import { cva, type VariantProps } from "class-variance-authority";
 
-export interface DrawerProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  placement?: "left" | "right" | "top" | "bottom";
-  width?: string | number;
-  height?: string | number;
-  title?: React.ReactNode;
-  children?: React.ReactNode;
-  footer?: React.ReactNode;
-  closable?: boolean;
-  mask?: boolean;
-  maskClosable?: boolean;
-  className?: string;
+type DrawerDirection = "left" | "right" | "top" | "bottom";
+
+interface DrawerContextType {
+  direction?: DrawerDirection;
 }
 
-const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(
-  (
-    {
-      open = false,
-      onOpenChange,
-      placement = "right",
-      width = 378,
-      height = 378,
-      title,
-      children,
-      footer,
-      closable = true,
-      mask = true,
-      maskClosable = true,
-      className,
-    },
-    ref,
-  ) => {
-    React.useEffect(() => {
-      if (open) {
-        document.body.style.overflow = "hidden";
-      } else {
-        document.body.style.overflow = "";
-      }
-      return () => {
-        document.body.style.overflow = "";
-      };
-    }, [open]);
+const DrawerContext = React.createContext<DrawerContextType>({});
 
-    const handleMaskClick = () => {
-      if (maskClosable) {
-        onOpenChange?.(false);
-      }
-    };
+interface DrawerProps extends React.ComponentProps<typeof DrawerPrimitive.Root> {
+  direction?: DrawerDirection;
+}
 
-    const handleClose = () => {
-      onOpenChange?.(false);
-    };
-
-    if (!open) return null;
-
-    const placementStyles = {
-      left: {
-        left: 0,
-        top: 0,
-        bottom: 0,
-        width: typeof width === "number" ? `${width}px` : width,
-        transform: open ? "translateX(0)" : "translateX(-100%)",
-      },
-      right: {
-        right: 0,
-        top: 0,
-        bottom: 0,
-        width: typeof width === "number" ? `${width}px` : width,
-        transform: open ? "translateX(0)" : "translateX(100%)",
-      },
-      top: {
-        left: 0,
-        top: 0,
-        right: 0,
-        height: typeof height === "number" ? `${height}px` : height,
-        transform: open ? "translateY(0)" : "translateY(-100%)",
-      },
-      bottom: {
-        left: 0,
-        bottom: 0,
-        right: 0,
-        height: typeof height === "number" ? `${height}px` : height,
-        transform: open ? "translateY(0)" : "translateY(100%)",
-      },
-    };
-
-    return (
-      <>
-        {/* Mask */}
-        {mask && (
-          <div
-            className={cn(
-              "fixed inset-0 z-50 bg-[var(--color-bg-overlay)] backdrop-blur-sm",
-              "animate-in fade-in",
-            )}
-            onClick={handleMaskClick}
-          />
-        )}
-
-        {/* Drawer */}
-        <div
-          ref={ref}
-          className={cn(
-            "fixed z-50 flex flex-col",
-            "bg-[var(--color-bg-secondary)] backdrop-blur-[var(--blur-heavy)]",
-            "border-[var(--color-border)] shadow-[var(--shadow-elevated)]",
-            placement === "left" && "border-r",
-            placement === "right" && "border-l",
-            placement === "top" && "border-b",
-            placement === "bottom" && "border-t",
-            "transition-transform duration-300",
-            className,
-          )}
-          style={placementStyles[placement]}
-        >
-          {/* Header */}
-          {(title || closable) && (
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border)]">
-              {title && (
-                <h3 className="text-lg font-semibold text-[var(--color-text)]">
-                  {title}
-                </h3>
-              )}
-              {closable && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleClose}
-                  className="ml-auto"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          )}
-
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto px-6 py-4">{children}</div>
-
-          {/* Footer */}
-          {footer && (
-            <div className="px-6 py-4 border-t border-[var(--color-border)]">
-              {footer}
-            </div>
-          )}
-        </div>
-      </>
-    );
-  },
+const Drawer = ({
+  shouldScaleBackground = true,
+  direction = "right",
+  ...props
+}: DrawerProps) => (
+  <DrawerContext.Provider value={{ direction }}>
+    <DrawerPrimitive.Root
+      shouldScaleBackground={shouldScaleBackground}
+      direction={direction === "bottom" || direction === "top" ? direction : "right"}
+      {...props}
+    />
+  </DrawerContext.Provider>
 );
 Drawer.displayName = "Drawer";
 
-export { Drawer };
+const DrawerTrigger = DrawerPrimitive.Trigger;
+
+const DrawerPortal = DrawerPrimitive.Portal;
+
+const DrawerClose = DrawerPrimitive.Close;
+
+const DrawerOverlay = React.forwardRef<
+  React.ElementRef<typeof DrawerPrimitive.Overlay>,
+  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Overlay>
+>(({ className, ...props }, ref) => (
+  <DrawerPrimitive.Overlay
+    ref={ref}
+    className={cn(
+      "fixed inset-0 z-50 bg-[var(--color-bg-overlay)] backdrop-blur-sm",
+      className,
+    )}
+    {...props}
+  />
+));
+DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
+
+const drawerContentVariants = cva(
+  "fixed z-50 flex flex-col border border-[var(--color-border)] bg-[var(--color-bg-secondary)] backdrop-blur-[var(--blur-heavy)] shadow-[var(--shadow-elevated)]",
+  {
+    variants: {
+      direction: {
+        left: "inset-y-0 left-0 h-full w-[378px] border-r rounded-r-xl",
+        right: "inset-y-0 right-0 h-full w-[378px] border-l rounded-l-xl",
+        top: "inset-x-0 top-0 w-full h-[378px] border-b rounded-b-xl",
+        bottom: "inset-x-0 bottom-0 w-full h-auto max-h-[80vh] border-t rounded-t-xl",
+      },
+    },
+    defaultVariants: {
+      direction: "right",
+    },
+  },
+);
+
+interface DrawerContentProps
+  extends React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>,
+    VariantProps<typeof drawerContentVariants> {}
+
+const DrawerContent = React.forwardRef<
+  React.ElementRef<typeof DrawerPrimitive.Content>,
+  DrawerContentProps
+>(({ className, children, direction, ...props }, ref) => {
+  const context = React.useContext(DrawerContext);
+  const finalDirection = direction || context.direction || "right";
+
+  return (
+    <DrawerPortal>
+      <DrawerOverlay />
+      <DrawerPrimitive.Content
+        ref={ref}
+        className={cn(drawerContentVariants({ direction: finalDirection }), className)}
+        {...props}
+      >
+        {finalDirection === "bottom" && (
+          <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-[var(--color-border)]" />
+        )}
+        {children}
+      </DrawerPrimitive.Content>
+    </DrawerPortal>
+  );
+});
+DrawerContent.displayName = "DrawerContent";
+
+const DrawerHeader = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn("grid gap-2 p-6 border-b border-[var(--color-border)]", className)}
+    {...props}
+  />
+);
+DrawerHeader.displayName = "DrawerHeader";
+
+const DrawerFooter = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn("mt-auto flex flex-col gap-2 p-6 border-t border-[var(--color-border)]", className)}
+    {...props}
+  />
+);
+DrawerFooter.displayName = "DrawerFooter";
+
+const DrawerTitle = React.forwardRef<
+  React.ElementRef<typeof DrawerPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Title>
+>(({ className, ...props }, ref) => (
+  <DrawerPrimitive.Title
+    ref={ref}
+    className={cn(
+      "text-lg font-semibold leading-none tracking-tight text-[var(--color-text)]",
+      className,
+    )}
+    {...props}
+  />
+));
+DrawerTitle.displayName = DrawerPrimitive.Title.displayName;
+
+const DrawerDescription = React.forwardRef<
+  React.ElementRef<typeof DrawerPrimitive.Description>,
+  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Description>
+>(({ className, ...props }, ref) => (
+  <DrawerPrimitive.Description
+    ref={ref}
+    className={cn("text-sm text-[var(--color-text-muted)]", className)}
+    {...props}
+  />
+));
+DrawerDescription.displayName = DrawerPrimitive.Description.displayName;
+
+export {
+  Drawer,
+  DrawerPortal,
+  DrawerOverlay,
+  DrawerTrigger,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerTitle,
+  DrawerDescription,
+};

@@ -124,7 +124,7 @@ export { Skeleton } from "./skeleton";
 
 export { Spinner, spinnerVariants } from "./spinner";
 
-export { Toaster } from "./toaster";
+export { Toaster, toast } from "./toaster";
 
 export { EmptyState } from "./empty-state";
 
@@ -178,7 +178,18 @@ export {
   SheetDescription,
 } from "./sheet";
 
-export { Drawer } from "./drawer";
+export {
+  Drawer,
+  DrawerPortal,
+  DrawerOverlay,
+  DrawerTrigger,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerTitle,
+  DrawerDescription,
+} from "./drawer";
 
 export { Modal } from "./modal";
 
@@ -319,7 +330,7 @@ export {
 // DATA DISPLAY COMPONENTS (13)
 // ============================================
 
-export { Avatar } from "./avatar";
+export { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 export type { AvatarProps } from "./avatar";
 
 export {

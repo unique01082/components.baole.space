@@ -65,6 +65,26 @@ const Chip = React.forwardRef<HTMLDivElement, ChipProps>(
         {leftIcon && <span className="mr-1.5">{leftIcon}</span>}
         {children}
         {rightIcon && <span className="ml-1.5">{rightIcon}</span>}
+        {onRemove && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+            className="ml-1.5 inline-flex items-center justify-center rounded-full hover:bg-[var(--color-bg-glass-hover)] p-0.5 transition-colors"
+            aria-label="Remove"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="h-3 w-3"
+            >
+              <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+            </svg>
+          </button>
+        )}
       </div>
     );
   },

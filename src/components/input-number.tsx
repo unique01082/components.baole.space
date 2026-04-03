@@ -105,6 +105,7 @@ const InputNumber = React.forwardRef<HTMLInputElement, InputNumberProps>(
         <input
           ref={inputRef}
           type="text"
+          role="spinbutton"
           value={formatValue(value)}
           onChange={handleChange}
           disabled={disabled}
@@ -126,6 +127,7 @@ const InputNumber = React.forwardRef<HTMLInputElement, InputNumberProps>(
               disabled={disabled || !canStepUp}
               onClick={() => handleStep("up")}
               className="h-5 w-7 rounded-none rounded-tr-md border-b border-[var(--color-border)] hover:bg-[var(--color-bg-glass-hover)]"
+              aria-label="Increment"
             >
               <Plus className="h-3 w-3" />
             </Button>
@@ -136,6 +138,7 @@ const InputNumber = React.forwardRef<HTMLInputElement, InputNumberProps>(
               disabled={disabled || !canStepDown}
               onClick={() => handleStep("down")}
               className="h-5 w-7 rounded-none rounded-br-md hover:bg-[var(--color-bg-glass-hover)]"
+              aria-label="Decrement"
             >
               <Minus className="h-3 w-3" />
             </Button>

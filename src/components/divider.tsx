@@ -51,6 +51,8 @@ const Divider = React.forwardRef<HTMLDivElement, DividerProps>(
     return (
       <div
         ref={ref}
+        role="separator"
+        aria-orientation={orientation}
         className={cn(
           orientation === "horizontal" ? "w-full h-px" : "h-full w-px",
           variant === "gradient"

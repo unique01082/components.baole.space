@@ -63,6 +63,7 @@ const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
             type="button"
             onClick={onClose}
             className="shrink-0 hover:opacity-70 transition-opacity"
+            aria-label="Close"
           >
             <X className="h-3 w-3" />
           </button>

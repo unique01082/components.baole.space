@@ -59,6 +59,7 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
       <>
         {/* Mask */}
         <div
+          role="presentation"
           className={cn(
             "fixed inset-0 z-50 bg-[var(--color-bg-overlay)] backdrop-blur-sm",
             "animate-in fade-in",
@@ -101,6 +102,7 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
                     size="icon"
                     onClick={handleClose}
                     className="ml-auto"
+                    aria-label="Close"
                   >
                     <X className="h-4 w-4" />
                   </Button>
