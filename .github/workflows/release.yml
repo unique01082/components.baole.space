@@ -30,9 +30,11 @@ jobs:
         with:
           node-version: '20'
           cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
-          scope: '@baolq'
-          always-auth: true
+          # Don't use registry-url with Trusted Publishers - it creates .npmrc expecting NODE_AUTH_TOKEN
+          # Trusted Publishers uses OIDC tokens automatically via GitHub Actions environment
+      
+      - name: Upgrade npm to latest version (for Trusted Publishers support)
+        run: npm install -g npm@latest
       
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -43,24 +45,19 @@ jobs:
       - name: Build library
         run: pnpm run build:lib
       
-      - name: Verify build output and npm configuration
+      - name: Verify npm configuration
         run: |
-          echo "=== Build output ==="
-          ls -la dist/ || echo "No dist folder"
-          echo "=== Package.json ==="
-          cat package.json | grep -E '"name"|"version"'
-          echo "=== NPM Config ==="
+          echo "npm version: $(npm --version)"
+          echo "node version: $(node --version)"
           npm config list
-          echo "=== Registry ==="
-          echo "Registry: $(npm config get registry)"
-          echo "@baolq:registry: $(npm config get @baolq:registry)"
       
-      - name: Publish to npm
-        # Uses npm Trusted Publishers (OIDC) - authentication is automatic!
-        # The OIDC token is automatically provided by GitHub when id-token: write is set
-        # IMPORTANT: Must use 'npm publish' not 'pnpm publish' for Trusted Publishers
-        # Note: When checking out tags, Git is in detached HEAD state, so we skip git checks
-        run: npm publish --access public --provenance
+      - name: Publish to npm with Trusted Publishers
+        # npm CLI (>= 9.5.0) automatically uses OIDC when:
+        # 1. id-token: write permission is set (done above)
+        # 2. --provenance flag is used  
+        # 3. No registry-url in setup-node (prevents .npmrc with NODE_AUTH_TOKEN template)
+        # GitHub provides OIDC token automatically - no manual auth needed
+        run: npm publish --provenance
       
       - name: Extract version from tag
         id: version
