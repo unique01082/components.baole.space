@@ -31,6 +31,8 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
+          scope: '@baolq'
+          always-auth: true
       
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -41,11 +43,25 @@ jobs:
       - name: Build library
         run: pnpm run build:lib
       
+      - name: Verify build output and npm configuration
+        run: |
+          echo "=== Build output ==="
+          ls -la dist/ || echo "No dist folder"
+          echo "=== Package.json ==="
+          cat package.json | grep -E '"name"|"version"'
+          echo "=== NPM Config ==="
+          npm config list
+          echo "=== Registry ==="
+          echo "Registry: $(npm config get registry)"
+          echo "@baolq:registry: $(npm config get @baolq:registry)"
+      
       - name: Publish to npm
         # Uses npm Trusted Publishers (OIDC) - authentication is automatic!
         # The OIDC token is automatically provided by GitHub when id-token: write is set
         # IMPORTANT: Must use 'npm publish' not 'pnpm publish' for Trusted Publishers
         run: npm publish --access public --provenance
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
       
       - name: Extract version from tag
         id: version
