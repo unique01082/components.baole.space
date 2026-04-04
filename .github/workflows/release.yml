@@ -63,6 +63,12 @@ jobs:
         id: version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
       
+      - name: Checkout master branch for changelog
+        run: |
+          git fetch origin master
+          git checkout master
+          git pull origin master
+      
       - name: Generate changelog
         id: changelog
         uses: TriPSs/conventional-changelog-action@v5
@@ -77,6 +83,7 @@ jobs:
           git-message: 'docs: update CHANGELOG.md for {version} [skip ci]'
           git-user-name: 'github-actions[bot]'
           git-user-email: 'github-actions[bot]@users.noreply.github.com'
+          git-branch: 'master'
       
       - name: Create GitHub Release
         id: create_release
