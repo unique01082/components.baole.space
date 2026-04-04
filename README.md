@@ -75,17 +75,17 @@ function App() {
 
 ## 📚 Documentation
 
-Comprehensive guidelines are available in the `/guidelines/baole-ui/` directory:
+Comprehensive guidelines are available in the `/guidelines/` directory:
 
 ### Getting Started
 
-1. **[Guidelines.md](./guidelines/baole-ui/Guidelines.md)** — Master index and AI workflow
-2. **[overview-components.md](./guidelines/baole-ui/overview-components.md)** — Complete component reference
-3. **[overview-icons.md](./guidelines/baole-ui/overview-icons.md)** — Icon system documentation
+1. **[Guidelines.md](./guidelines/Guidelines.md)** — Master index and AI workflow
+2. **[overview-components.md](./guidelines/overview-components.md)** — Complete component reference
+3. **[overview-icons.md](./guidelines/overview-icons.md)** — Icon system documentation
 
 ### Design Tokens
 
-- **[colors.md](./guidelines/baole-ui/design-tokens/colors.md)** — Color system and usage
+- **[colors.md](./guidelines/design-tokens/colors.md)** — Color system and usage
 - **typography.md** — Font scales and text patterns *(coming soon)*
 - **spacing.md** — Layout and spacing conventions *(coming soon)*
 
@@ -93,9 +93,9 @@ Comprehensive guidelines are available in the `/guidelines/baole-ui/` directory:
 
 Detailed documentation for each component:
 
-- **[button.md](./guidelines/baole-ui/components/button.md)** — Button variants, sizes, and states
-- **[card.md](./guidelines/baole-ui/components/card.md)** — Card compositions and patterns
-- **[input.md](./guidelines/baole-ui/components/input.md)** — Form inputs with validation *(coming soon)*
+- **[button.md](./guidelines/components/button.md)** — Button variants, sizes, and states
+- **[card.md](./guidelines/components/card.md)** — Card compositions and patterns
+- **[input.md](./guidelines/components/input.md)** — Form inputs with validation *(coming soon)*
 - ...and 40+ more component guides
 
 ---
@@ -220,13 +220,13 @@ Visit `http://localhost:5173` to explore:
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read the [Guidelines.md](./guidelines/baole-ui/Guidelines.md) first.
+Contributions are welcome! Please read the [Guidelines.md](./guidelines/Guidelines.md) first.
 
 ### Development Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/unique01082/baole-ui.git
+git clone https://github.com/unique01082/components.baole.space.git
 
 # Install dependencies
 npm install
@@ -250,7 +250,7 @@ MIT © Bao LE
 
 ## 🔗 Links
 
-- **GitHub**: https://github.com/unique01082/baole-ui
+- **GitHub**: https://github.com/unique01082/components.baole.space
 - **Portfolio**: https://baole.space
 - **NPM**: *(coming soon)*
 - **Storybook**: *(coming soon)*
