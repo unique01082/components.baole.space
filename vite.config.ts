@@ -37,6 +37,7 @@ export default defineConfig({
       ? [
         dts({
           include: ['src/components'],
+          exclude: ['**/__tests__/**', '**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
           outDir: 'dist',
           insertTypesEntry: true,
           tsconfigPath: './tsconfig.json',
