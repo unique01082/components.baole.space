@@ -92,10 +92,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Send Discord Notification
-        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
+          # Skip if Discord webhook is not configured
+          if [ -z "$DISCORD_WEBHOOK" ]; then
+            echo "Discord webhook not configured, skipping notification"
+            exit 0
+          fi
+          
           VERSION="${{ steps.version.outputs.VERSION }}"
           RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
           NPM_URL="https://www.npmjs.com/package/@baolq/ui/v/${VERSION}"
