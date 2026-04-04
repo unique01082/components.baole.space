@@ -1,0 +1,157 @@
+name: Release & Publish to NPM
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on version tags like v1.0.0, v2.1.3
+
+permissions:
+  contents: write # Required for creating releases
+  id-token: write # Required for npm provenance
+
+jobs:
+  release:
+    name: Build, Test & Publish
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for changelog generation
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Run tests
+        run: pnpm run test
+      
+      - name: Build library
+        run: pnpm run build:lib
+      
+      - name: Publish to npm
+        run: pnpm publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
+      
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      
+      - name: Generate changelog
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          output-file: 'CHANGELOG.md'
+          skip-version-file: 'true'
+          skip-commit: 'false'
+          skip-tag: 'true'
+          skip-on-empty: 'false'
+          git-message: 'docs: update CHANGELOG.md for {version}'
+          git-user-name: 'github-actions[bot]'
+          git-user-email: 'github-actions[bot]@users.noreply.github.com'
+      
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ steps.version.outputs.VERSION }}
+          body: |
+            ## @baolq/ui v${{ steps.version.outputs.VERSION }}
+            
+            ${{ steps.changelog.outputs.clean_changelog }}
+            
+            ---
+            
+            **Installation**
+            ```bash
+            npm install @baolq/ui@${{ steps.version.outputs.VERSION }}
+            # or
+            pnpm add @baolq/ui@${{ steps.version.outputs.VERSION }}
+            ```
+            
+            **NPM Package**: https://www.npmjs.com/package/@baolq/ui/v/${{ steps.version.outputs.VERSION }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Send Discord Notification
+        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
+          NPM_URL="https://www.npmjs.com/package/@baolq/ui/v/${VERSION}"
+          
+          # Prepare changelog for Discord (limit to 1500 chars)
+          CHANGELOG="${{ steps.changelog.outputs.clean_changelog }}"
+          CHANGELOG_TRIMMED=$(echo "$CHANGELOG" | head -c 1500)
+          if [ ${#CHANGELOG} -gt 1500 ]; then
+            CHANGELOG_TRIMMED="${CHANGELOG_TRIMMED}..."
+          fi
+          
+          # Send Discord webhook
+          curl -H "Content-Type: application/json" \
+            -d "{
+              \"embeds\": [{
+                \"title\": \"🚀 New Release: @baolq/ui v${VERSION}\",
+                \"description\": \"A new version has been published to npm!\",
+                \"color\": 5814783,
+                \"fields\": [
+                  {
+                    \"name\": \"📦 Version\",
+                    \"value\": \"v${VERSION}\",
+                    \"inline\": true
+                  },
+                  {
+                    \"name\": \"📝 Type\",
+                    \"value\": \"${{ contains(github.ref_name, '-') && 'Pre-release' || 'Stable' }}\",
+                    \"inline\": true
+                  },
+                  {
+                    \"name\": \"📋 Changelog\",
+                    \"value\": \"${CHANGELOG_TRIMMED:-No changes documented}\"
+                  }
+                ],
+                \"url\": \"${RELEASE_URL}\",
+                \"footer\": {
+                  \"text\": \"@baolq/ui • Released via GitHub Actions\"
+                },
+                \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"
+              }],
+              \"components\": [{
+                \"type\": 1,
+                \"components\": [
+                  {
+                    \"type\": 2,
+                    \"style\": 5,
+                    \"label\": \"View Release\",
+                    \"url\": \"${RELEASE_URL}\"
+                  },
+                  {
+                    \"type\": 2,
+                    \"style\": 5,
+                    \"label\": \"View on npm\",
+                    \"url\": \"${NPM_URL}\"
+                  }
+                ]
+              }]
+            }" \
+            "$DISCORD_WEBHOOK"

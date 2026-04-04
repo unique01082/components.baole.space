@@ -48,7 +48,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "release:patch": "npm version patch -m 'chore: release v%s' && git push origin main --follow-tags",
+    "release:minor": "npm version minor -m 'chore: release v%s' && git push origin main --follow-tags",
+    "release:major": "npm version major -m 'chore: release v%s' && git push origin main --follow-tags"
   },
   "dependencies": {
     "canvas-confetti": "1.9.4",
