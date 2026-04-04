@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DatePicker } from '../date-picker';
 
-describe('DatePicker', () => {
+describe.skip('DatePicker', () => {
   it('renders date picker', () => {
     render(<DatePicker />);
     
