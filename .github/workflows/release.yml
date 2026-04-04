@@ -73,9 +73,10 @@ jobs:
           skip-commit: 'false'
           skip-tag: 'true'
           skip-on-empty: 'false'
-          git-message: 'docs: update CHANGELOG.md for {version}'
+          git-message: 'docs: update CHANGELOG.md for {version} [skip ci]'
           git-user-name: 'github-actions[bot]'
           git-user-email: 'github-actions[bot]@users.noreply.github.com'
+          git-pull-method: 'false'
       
       - name: Create GitHub Release
         id: create_release
