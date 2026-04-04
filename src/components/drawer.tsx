@@ -12,8 +12,17 @@ interface DrawerContextType {
 
 const DrawerContext = React.createContext<DrawerContextType>({});
 
-interface DrawerProps extends React.ComponentProps<typeof DrawerPrimitive.Root> {
+interface DrawerProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  defaultOpen?: boolean;
+  shouldScaleBackground?: boolean;
   direction?: DrawerDirection;
+  modal?: boolean;
+  dismissible?: boolean;
+  onDrag?: (event: React.PointerEvent<HTMLDivElement>, percentageDragged: number) => void;
+  onRelease?: (event: React.PointerEvent<HTMLDivElement>, open: boolean) => void;
+  children?: React.ReactNode;
 }
 
 const Drawer = ({
