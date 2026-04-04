@@ -42,12 +42,10 @@ jobs:
         run: pnpm run build:lib
       
       - name: Publish to npm
-        # Uses npm Trusted Publishers (OIDC) - no NPM_TOKEN needed!
-        # Authentication happens automatically via GitHub OIDC token
-        # Setup: Configure trusted publisher on npmjs.com (see .github/NPM_TRUSTED_PUBLISHERS_SETUP.md)
-        run: pnpm publish --access public --no-git-checks --provenance
-        env:
-          NPM_CONFIG_PROVENANCE: true
+        # Uses npm Trusted Publishers (OIDC) - authentication is automatic!
+        # The OIDC token is automatically provided by GitHub when id-token: write is set
+        # IMPORTANT: Must use 'npm publish' not 'pnpm publish' for Trusted Publishers
+        run: npm publish --access public --provenance
       
       - name: Extract version from tag
         id: version
