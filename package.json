@@ -1,7 +1,7 @@
 {
   "name": "@baolq/ui",
   "private": false,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A rich dark-gradient React component library for the baole.space ecosystem. Ant Design-level prop richness, glassmorphism design system.",
   "author": "Bao LE <bao.lq.it@gmail.com>",
   "license": "MIT",
