@@ -46,7 +46,7 @@
     "build:lib:win": "cross-env BUILD_TARGET=lib vite build",
     "prepublishOnly": "pnpm run build:lib:win",
     "typecheck": "tsc --noEmit",
-    "test": "vitest",
+    "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "release:patch": "npm version patch -m 'chore: release v%s' && git push origin master --follow-tags",

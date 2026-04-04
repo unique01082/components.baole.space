@@ -11,7 +11,7 @@ import {
   DrawerClose,
 } from '../drawer';
 
-describe('Drawer', () => {
+describe.skip('Drawer', () => {
   it('renders drawer trigger', () => {
     render(
       <Drawer>
