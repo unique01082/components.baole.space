@@ -59,8 +59,9 @@ jobs:
         # Uses npm Trusted Publishers (OIDC) - authentication is automatic!
         # The OIDC token is automatically provided by GitHub when id-token: write is set
         # IMPORTANT: Must use 'npm publish' not 'pnpm publish' for Trusted Publishers
-        run: npm publish --access public --provenance
+        run: pnpm publish --access public --provenance
         env:
+          NPM_CONFIG_PROVENANCE: true
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
       
       - name: Extract version from tag
