@@ -1,3 +1,12 @@
+## [1.1.16](https://github.com/unique01082/components.baole.space/compare/v1.1.15...v1.1.16) (2026-04-05)
+
+
+### Features
+
+* enhance form component with new sub-components and improved validation handling ([b7e6a24](https://github.com/unique01082/components.baole.space/commit/b7e6a24e50d18dcb80e068b5450c99a59ec2ea33))
+
+
+
 ## [1.1.15](https://github.com/unique01082/components.baole.space/compare/v1.1.14...v1.1.15) (2026-04-05)
 
 
@@ -12,10 +21,6 @@
 
 
 ## [1.1.13](https://github.com/unique01082/components.baole.space/compare/v1.1.12...v1.1.13) (2026-04-04)
-
-
-
-## [1.1.12](https://github.com/unique01082/components.baole.space/compare/v1.1.11...v1.1.12) (2026-04-04)
 
 
 
