@@ -117,6 +117,8 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
+          set -euo pipefail
+
           # Skip if Discord webhook is not configured
           if [ -z "$DISCORD_WEBHOOK" ]; then
             echo "Discord webhook not configured, skipping notification"
@@ -126,59 +128,103 @@ jobs:
           VERSION="${{ steps.version.outputs.VERSION }}"
           RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
           NPM_URL="https://www.npmjs.com/package/@baolq/ui/v/${VERSION}"
+          RELEASE_TYPE="Stable"
+          if [[ "${{ github.ref_name }}" == *-* ]]; then
+            RELEASE_TYPE="Pre-release"
+          fi
           
-          # Prepare changelog for Discord (limit to 1500 chars)
-          CHANGELOG="${{ steps.changelog.outputs.clean_changelog }}"
-          CHANGELOG_TRIMMED=$(echo "$CHANGELOG" | head -c 1500)
-          if [ ${#CHANGELOG} -gt 1500 ]; then
+          # Prefer changelog action output, then fallback to latest section in CHANGELOG.md.
+          CHANGELOG_RAW='${{ steps.changelog.outputs.clean_changelog }}'
+
+          if [ -z "$(echo "$CHANGELOG_RAW" | tr -d '[:space:]')" ] && [ -f "CHANGELOG.md" ]; then
+            CHANGELOG_RAW=$(awk '
+              BEGIN { section = 0 }
+              /^## \[/ {
+                if (section == 0) { section = 1; next }
+                if (section == 1) { exit }
+              }
+              section == 1 { print }
+            ' CHANGELOG.md)
+          fi
+
+          CHANGELOG_CLEAN=$(echo "$CHANGELOG_RAW" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
+          if [ -z "$CHANGELOG_CLEAN" ]; then
+            CHANGELOG_CLEAN="No detailed changelog was generated for this release."
+          fi
+
+          # Discord embed field max length is 1024.
+          CHANGELOG_TRIMMED=$(echo "$CHANGELOG_CLEAN" | head -c 980)
+          if [ ${#CHANGELOG_CLEAN} -gt 980 ]; then
             CHANGELOG_TRIMMED="${CHANGELOG_TRIMMED}..."
           fi
+
+          PAYLOAD=$(jq -n \
+            --arg version "$VERSION" \
+            --arg releaseUrl "$RELEASE_URL" \
+            --arg npmUrl "$NPM_URL" \
+            --arg releaseType "$RELEASE_TYPE" \
+            --arg changelog "$CHANGELOG_TRIMMED" \
+            --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+            '{
+              embeds: [
+                {
+                  title: ("Release v" + $version + " is live"),
+                  description: "A new @baolq/ui package is available on npm.",
+                  color: (if $releaseType == "Pre-release" then 16098851 else 5763719 end),
+                  url: $releaseUrl,
+                  author: {
+                    name: "@baolq/ui"
+                  },
+                  fields: [
+                    {
+                      name: "Version",
+                      value: ("v" + $version),
+                      inline: true
+                    },
+                    {
+                      name: "Channel",
+                      value: $releaseType,
+                      inline: true
+                    },
+                    {
+                      name: "Package",
+                      value: ("[@baolq/ui on npm](" + $npmUrl + ")"),
+                      inline: true
+                    },
+                    {
+                      name: "What changed",
+                      value: $changelog,
+                      inline: false
+                    }
+                  ],
+                  footer: {
+                    text: "Published via GitHub Actions"
+                  },
+                  timestamp: $timestamp
+                }
+              ],
+              components: [
+                {
+                  type: 1,
+                  components: [
+                    {
+                      type: 2,
+                      style: 5,
+                      label: "Release Notes",
+                      url: $releaseUrl
+                    },
+                    {
+                      type: 2,
+                      style: 5,
+                      label: "Open npm Package",
+                      url: $npmUrl
+                    }
+                  ]
+                }
+              ]
+            }')
           
           # Send Discord webhook
           curl -H "Content-Type: application/json" \
-            -d "{
-              \"embeds\": [{
-                \"title\": \"🚀 New Release: @baolq/ui v${VERSION}\",
-                \"description\": \"A new version has been published to npm!\",
-                \"color\": 5814783,
-                \"fields\": [
-                  {
-                    \"name\": \"📦 Version\",
-                    \"value\": \"v${VERSION}\",
-                    \"inline\": true
-                  },
-                  {
-                    \"name\": \"📝 Type\",
-                    \"value\": \"${{ contains(github.ref_name, '-') && 'Pre-release' || 'Stable' }}\",
-                    \"inline\": true
-                  },
-                  {
-                    \"name\": \"📋 Changelog\",
-                    \"value\": \"${CHANGELOG_TRIMMED:-No changes documented}\"
-                  }
-                ],
-                \"url\": \"${RELEASE_URL}\",
-                \"footer\": {
-                  \"text\": \"@baolq/ui • Released via GitHub Actions\"
-                },
-                \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"
-              }],
-              \"components\": [{
-                \"type\": 1,
-                \"components\": [
-                  {
-                    \"type\": 2,
-                    \"style\": 5,
-                    \"label\": \"View Release\",
-                    \"url\": \"${RELEASE_URL}\"
-                  },
-                  {
-                    \"type\": 2,
-                    \"style\": 5,
-                    \"label\": \"View on npm\",
-                    \"url\": \"${NPM_URL}\"
-                  }
-                ]
-              }]
-            }" \
+            -d "$PAYLOAD" \
             "$DISCORD_WEBHOOK"
