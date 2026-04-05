@@ -1,74 +1,166 @@
 import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import {
+  Controller,
+  FormProvider,
+  useFormContext,
+  type ControllerProps,
+  type FieldPath,
+  type FieldValues,
+} from "react-hook-form";
 import { cn } from "../utils";
 import { Label } from "./label";
 
-type FormContextValue = {
-  errors: Record<string, string>;
-  touched: Record<string, boolean>;
+const Form = FormProvider;
+
+type FormFieldContextValue<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
+  name: TName;
 };
 
-const FormContext = React.createContext<FormContextValue>({
-  errors: {},
-  touched: {},
+const FormFieldContext = React.createContext<FormFieldContextValue>(
+  {} as FormFieldContextValue,
+);
+
+const FormField = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  ...props
+}: ControllerProps<TFieldValues, TName>) => {
+  return (
+    <FormFieldContext.Provider value={{ name: props.name }}>
+      <Controller {...props} />
+    </FormFieldContext.Provider>
+  );
+};
+FormField.displayName = "FormField";
+
+type FormItemContextValue = {
+  id: string;
+};
+
+const FormItemContext = React.createContext<FormItemContextValue>({
+  id: "",
 });
 
-export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
-  onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
-  errors?: Record<string, string>;
-  touched?: Record<string, boolean>;
-}
+const useFormField = () => {
+  const fieldContext = React.useContext(FormFieldContext);
+  const itemContext = React.useContext(FormItemContext);
+  const { getFieldState, formState } = useFormContext();
 
-const Form = React.forwardRef<HTMLFormElement, FormProps>(
-  ({ className, onSubmit, errors = {}, touched = {}, ...props }, ref) => {
-    return (
-      <FormContext.Provider value={{ errors, touched }}>
-        <form
-          ref={ref}
-          onSubmit={onSubmit}
-          className={cn("space-y-6", className)}
-          {...props}
-        />
-      </FormContext.Provider>
-    );
-  },
-);
-Form.displayName = "Form";
+  if (!fieldContext?.name) {
+    throw new Error("useFormField must be used within <FormField>");
+  }
 
-export interface FormItemProps extends React.HTMLAttributes<HTMLDivElement> {
-  label?: string;
-  name?: string;
-  required?: boolean;
-  description?: string;
-}
+  const fieldState = getFieldState(fieldContext.name, formState);
+
+  const { id } = itemContext;
+
+  return {
+    id,
+    name: fieldContext.name,
+    formItemId: `${id}-form-item`,
+    formDescriptionId: `${id}-form-item-description`,
+    formMessageId: `${id}-form-item-message`,
+    ...fieldState,
+  };
+};
+
+interface FormItemProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const FormItem = React.forwardRef<HTMLDivElement, FormItemProps>(
-  (
-    { className, label, name, required, description, children, ...props },
-    ref,
-  ) => {
-    const { errors, touched } = React.useContext(FormContext);
-    const error = name && touched[name] ? errors[name] : undefined;
+  ({ className, ...props }, ref) => {
+    const id = React.useId();
 
     return (
-      <div ref={ref} className={cn("space-y-2", className)} {...props}>
-        {label && (
-          <Label htmlFor={name}>
-            {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
-          </Label>
-        )}
-        {children}
-        {description && !error && (
-          <p className="text-xs text-[var(--color-text-muted)]">
-            {description}
-          </p>
-        )}
-        {error && <p className="text-xs text-red-500">{error}</p>}
-      </div>
+      <FormItemContext.Provider value={{ id }}>
+        <div ref={ref} className={cn("space-y-1.5", className)} {...props} />
+      </FormItemContext.Provider>
     );
   },
 );
 FormItem.displayName = "FormItem";
+
+const FormLabel = React.forwardRef<
+  React.ElementRef<typeof Label>,
+  React.ComponentPropsWithoutRef<typeof Label>
+>(({ className, ...props }, ref) => {
+  const { error, formItemId } = useFormField();
+
+  return (
+    <Label
+      ref={ref}
+      className={cn(error && "text-[var(--color-destructive)]", className)}
+      htmlFor={formItemId}
+      {...props}
+    />
+  );
+});
+FormLabel.displayName = "FormLabel";
+
+const FormControl = React.forwardRef<
+  React.ElementRef<typeof Slot>,
+  React.ComponentPropsWithoutRef<typeof Slot>
+>(({ ...props }, ref) => {
+  const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
+
+  return (
+    <Slot
+      ref={ref}
+      id={formItemId}
+      aria-describedby={
+        !error ? formDescriptionId : `${formDescriptionId} ${formMessageId}`
+      }
+      aria-invalid={!!error}
+      {...props}
+    />
+  );
+});
+FormControl.displayName = "FormControl";
+
+const FormDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => {
+  const { formDescriptionId } = useFormField();
+
+  return (
+    <p
+      ref={ref}
+      id={formDescriptionId}
+      className={cn("text-sm text-[var(--color-text-muted)]", className)}
+      {...props}
+    />
+  );
+});
+FormDescription.displayName = "FormDescription";
+
+const FormMessage = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, children, ...props }, ref) => {
+  const { error, formMessageId } = useFormField();
+  const body = error ? String(error?.message ?? "") : children;
+
+  if (!body) {
+    return null;
+  }
+
+  return (
+    <p
+      ref={ref}
+      id={formMessageId}
+      className={cn("text-sm font-medium text-[var(--color-destructive)]", className)}
+      {...props}
+    >
+      {body}
+    </p>
+  );
+});
+FormMessage.displayName = "FormMessage";
 
 export interface FormSectionProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string;
@@ -112,4 +204,15 @@ const FormActions = React.forwardRef<
 ));
 FormActions.displayName = "FormActions";
 
-export { Form, FormItem, FormSection, FormActions };
+export {
+  Form,
+  FormActions,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormSection,
+  useFormField,
+};

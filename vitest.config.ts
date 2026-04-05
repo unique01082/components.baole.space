@@ -22,7 +22,6 @@ export default defineConfig({
       "src/components/__tests__/cascader.test.tsx",
       "src/components/__tests__/chart.test.tsx",
       "src/components/__tests__/date-range-picker.test.tsx",
-      "src/components/__tests__/form.test.tsx",
       "src/components/__tests__/mentions.test.tsx",
       "src/components/__tests__/message.test.tsx",
       "src/components/__tests__/qrcode.test.tsx",
