@@ -1,7 +1,3 @@
-## [1.1.16](https://github.com/unique01082/components.baole.space/compare/v1.1.15...v1.1.16) (2026-04-05)
-
-
-
 ## [1.1.15](https://github.com/unique01082/components.baole.space/compare/v1.1.14...v1.1.15) (2026-04-05)
 
 
